@@ -31,7 +31,7 @@ function Profile() {
           aria-expanded={open ? 'true' : undefined}
         >
           <Avatar
-            sx={{ width: 30, height: 30 }}
+            sx={{ width: 34, height: 34 }}
             //   alt="Dang The Ky"
             src='https://th.bing.com/th/id/OIP.2Kxlf9jARk8yMWlLJQ00BwAAAA?w=256&h=256&rs=1&pid=ImgDetMain'
           />
