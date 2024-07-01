@@ -4,7 +4,7 @@ import Container from '@mui/material/Container'
 import AppBar from '~/components/AppBar/AppBar'
 import BoardBar from './BoardBar/BoardBar'
 import BoardContent from './BoardContent/BoardContent'
-import { mockData } from '~/apis/mock-data'
+// import { mockData } from '~/apis/mock-data'
 import { feachBoardDetailsAPI } from '~/apis'
 
 function Board() {
@@ -12,7 +12,7 @@ function Board() {
 
   useEffect(() => {
     //Tạm thời fix cứng boardId
-    const boardId = '667e1f2250c5e53f94c459aa'
+    const boardId = '667f720a82234c825fb9b440'
     // Call API
     feachBoardDetailsAPI(boardId).then( board => {
       setBoard(board)
