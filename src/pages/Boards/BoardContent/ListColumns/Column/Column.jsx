@@ -17,7 +17,6 @@ import ContentPaste from '@mui/icons-material/ContentPaste'
 import Cloud from '@mui/icons-material/Cloud'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import ListCards from './ListCards/ListCards'
-import { mapOrder } from '~/utils/sorts'
 import TextField from '@mui/material/TextField'
 import CloseIcon from '@mui/icons-material/Close'
 import { toast } from 'react-toastify'
@@ -46,14 +45,16 @@ function Column({ column, createNewCard }) {
   const open = Boolean(anchorEl)
   const handleClick = (event) => { setAnchorEl(event.currentTarget) }
   const handleClose = () => { setAnchorEl(null) }
+
   /*Sap xep card */
-  const orderedCards = mapOrder(column?.cards, column?.cardOrderIds, '_id')
+  // Card đã được sắp xếp ở component cha cao nhất
+  const orderedCards = column.cards
 
   const [openNewCardForm, setOpenNewCardForm] = useState(false)
   const toggleOpenNewCardForm = () => setOpenNewCardForm(!openNewCardForm)
   const [newCardTitle, setNewCardTitle] = useState('')
 
-  const addNewCard = async () => {
+  const addNewCard = () => {
     if (!newCardTitle) {
       toast.error('Please enter Card title')
       return
@@ -65,7 +66,7 @@ function Column({ column, createNewCard }) {
     }
     // Gọi lên props function createNewCard nằm ở component cha cao nhất(boards/_id.jsx)
     // Tạo dữ liệu Card để gọi API
-    await createNewCard(newCardData)
+    createNewCard(newCardData)
     // Đóng lại trạng thái thêm Card mới & clear input
     toggleOpenNewCardForm()
     setNewCardTitle('')
