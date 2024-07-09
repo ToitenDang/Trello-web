@@ -78,9 +78,17 @@ function Board() {
     const newBoard = { ...board }
     const columnToUpdate = newBoard.columns.find(column => column._id === createdCard.columnId)
     if (columnToUpdate) {
-      columnToUpdate.cards.push(createdCard)
-      columnToUpdate.cardOrderIds.push(createdCard._id)
+      // Nếu column rỗng bản chất là đang có 1 placeholder-card 
+      if (columnToUpdate.cards.some(card => card.FE_PlaceholderCard)) {
+        columnToUpdate.cards = [createdCard]
+        columnToUpdate.cardOrderIds = [createdCard._id]
+      } else {
+        //  Nếu column đã có data thì thêm vào cuối mảng
+        columnToUpdate.cards.push(createdCard)
+        columnToUpdate.cardOrderIds.push(createdCard._id)
+      }
     }
+    console.log('🚀 ~ createNewCard ~ columnToUpdate:', columnToUpdate)
     setBoard(newBoard)
   }
 
@@ -115,6 +123,10 @@ function Board() {
   /*
    Khi di chuyển card sang column khác
    B1: Cập nhật mảng cardOrderIds của Column ban đầu chứa nó( Hiểu bản chất là xóa _id của card ban
+    console.log("🚀 ~ createNewCard ~ createdCard:", createdCard)
+    console.log("🚀 ~ createNewCard ~ createdCard:", createdCard)
+    console.log("🚀 ~ createNewCard ~ createdCard:", createdCard)
+    console.log("🚀 ~ createNewCard ~ createdCard:", createdCard)
    đầu ra khỏi mảng)
    B2: Cập nhật mảng cardOrderIds của Column tiếp theo (Hiểu bản chất là thêm _id của card vào mảng)
    B3: Cập nhật lại trường columnId mới của card đã kéo
@@ -129,10 +141,13 @@ function Board() {
     setBoard(newBoard)
 
     // Gọi API xử lý phía BE
+    let prevCardOrderIds = dndOrderedColumns.find(c => c._id === prevColumnId)?.cardOrderIds
+    // Xử lý vấn đề khi kéo card cuối cùng ra khỏi column vì column rỗng được add playholder-card được tạo ở fron-end khi xử lý kéo vào column rỗng
+    if (prevCardOrderIds[0].includes('-placeholder-card'))  prevCardOrderIds = []
     moveCardToDifferentColumnAPI({
       currentCardId,
       prevColumnId,
-      prevCardOrderIds: dndOrderedColumns.find(c => c._id === prevColumnId)?.cardOrderIds,
+      prevCardOrderIds,
       nextColumnId,
       nextCardOrderIds: dndOrderedColumns.find(c => c._id === nextColumnId)?.cardOrderIds
 
