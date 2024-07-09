@@ -31,3 +31,8 @@ export const createNewCardAPI = async (newCardData) => {
   // axios sẽ trả kết quả về qua property của nó là data
   return response.data
 }
+
+export const moveCardToDifferentColumnAPI = async ( updateData) => {
+  const response = await axios.put(`${API_ROOT}/v1/boards/supports/moving_card`, updateData)
+  return response.data
+}
