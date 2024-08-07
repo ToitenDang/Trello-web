@@ -13,11 +13,13 @@ import {
   createNewCardAPI,
   updateBoardDetailsAPI,
   updateColumnDetailsAPI,
-  moveCardToDifferentColumnAPI
+  moveCardToDifferentColumnAPI,
+  deleteColumnDetailsAPI
 } from '~/apis'
 import { generatePlaceholderCard } from '~/utils/formatters'
 import { isEmpty } from 'lodash'
 import { Box, Typography } from '@mui/material'
+import { toast } from 'react-toastify'
 function Board() {
   const [board, setBoard] = useState(null)
 
@@ -78,7 +80,7 @@ function Board() {
     const newBoard = { ...board }
     const columnToUpdate = newBoard.columns.find(column => column._id === createdCard.columnId)
     if (columnToUpdate) {
-      // Nếu column rỗng bản chất là đang có 1 placeholder-card 
+      // Nếu column rỗng bản chất là đang có 1 placeholder-card
       if (columnToUpdate.cards.some(card => card.FE_PlaceholderCard)) {
         columnToUpdate.cards = [createdCard]
         columnToUpdate.cardOrderIds = [createdCard._id]
@@ -88,7 +90,7 @@ function Board() {
         columnToUpdate.cardOrderIds.push(createdCard._id)
       }
     }
-    console.log('🚀 ~ createNewCard ~ columnToUpdate:', columnToUpdate)
+    //console.log('🚀 ~ createNewCard ~ columnToUpdate:', columnToUpdate)
     setBoard(newBoard)
   }
 
@@ -123,10 +125,6 @@ function Board() {
   /*
    Khi di chuyển card sang column khác
    B1: Cập nhật mảng cardOrderIds của Column ban đầu chứa nó( Hiểu bản chất là xóa _id của card ban
-    console.log("🚀 ~ createNewCard ~ createdCard:", createdCard)
-    console.log("🚀 ~ createNewCard ~ createdCard:", createdCard)
-    console.log("🚀 ~ createNewCard ~ createdCard:", createdCard)
-    console.log("🚀 ~ createNewCard ~ createdCard:", createdCard)
    đầu ra khỏi mảng)
    B2: Cập nhật mảng cardOrderIds của Column tiếp theo (Hiểu bản chất là thêm _id của card vào mảng)
    B3: Cập nhật lại trường columnId mới của card đã kéo
@@ -143,7 +141,7 @@ function Board() {
     // Gọi API xử lý phía BE
     let prevCardOrderIds = dndOrderedColumns.find(c => c._id === prevColumnId)?.cardOrderIds
     // Xử lý vấn đề khi kéo card cuối cùng ra khỏi column vì column rỗng được add playholder-card được tạo ở fron-end khi xử lý kéo vào column rỗng
-    if (prevCardOrderIds[0].includes('-placeholder-card'))  prevCardOrderIds = []
+    if (prevCardOrderIds[0].includes('-placeholder-card')) prevCardOrderIds = []
     moveCardToDifferentColumnAPI({
       currentCardId,
       prevColumnId,
@@ -153,6 +151,19 @@ function Board() {
 
     })
 
+  }
+
+  // Xử lý xóa Column và Cards trong nó
+  const deleteColumnDetails = (columnId) => {
+    // Cập nhật lại cho chuẩn dữ liệu stateBoard
+    const newBoard = { ...board }
+    newBoard.columns = newBoard.columns.filter(c => c._id !== columnId)
+    newBoard.columnOrderIds = newBoard.columnOrderIds.filter(_id => _id !== columnId)
+    setBoard(newBoard)
+    // Gọi API xử lý phía BE
+    deleteColumnDetailsAPI(columnId).then(res => {
+      toast.success(res?.deleteResult)
+    })
   }
 
   if (!board) {
@@ -167,6 +178,7 @@ function Board() {
       </Box>
     )
   }
+
   return (
     <Container disableGutters maxWidth = {false} sx={{ height:'100vh' }}>
       <AppBar/>
@@ -174,11 +186,13 @@ function Board() {
       <BoardBar board = {board} />
       <BoardContent
         board = {board}
+
         createNewColumn = {createNewColumn}
         createNewCard = {createNewCard}
         moveColumns = {moveColumns}
         moveCardInTheSameColumn = {moveCardInTheSameColumn}
         moveCardToDifferentColumn= {moveCardToDifferentColumn}
+        deleteColumnDetails= {deleteColumnDetails}
       />
     </Container>
   )
