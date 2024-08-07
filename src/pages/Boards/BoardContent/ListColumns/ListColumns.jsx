@@ -10,7 +10,7 @@ import { toast } from 'react-toastify'
 import { SortableContext, horizontalListSortingStrategy } from '@dnd-kit/sortable'
 import { useState } from 'react'
 
-function ListColumns( { columns, createNewColumn, createNewCard }) {
+function ListColumns( { columns, createNewColumn, createNewCard, deleteColumnDetails }) {
 
   const [openNewColumnForm, setOpenNewColumnForm] = useState(false)
   const toggleOpenNewColumnForm = () => setOpenNewColumnForm(!openNewColumnForm)
@@ -49,7 +49,12 @@ function ListColumns( { columns, createNewColumn, createNewCard }) {
         overflowY: 'hidden',
         '&::-webkit-scrollbar-track' : { m : 2 }
       }}>
-        {columns?.map(column => <Column key={column._id} column = {column} createNewCard = {createNewCard}/>)}
+        {columns?.map(column => <Column
+          key={column._id}
+          column = {column}
+          createNewCard = {createNewCard}
+          deleteColumnDetails = {deleteColumnDetails}
+        />)}
         {/* Add new column */}
         {!openNewColumnForm
           ? <Box onClick = {toggleOpenNewColumnForm} sx={{
